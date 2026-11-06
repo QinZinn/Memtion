@@ -1,0 +1,196 @@
+# Memtion - pack "Meme gốc": 20 meme trong Sample_Meme/.
+#
+# Mỗi file .toml trong thư mục packs/ là một pack. Trong app bấm `p` để đổi pack.
+#
+# Mỗi [[meme]] có:
+#   id        tên ngắn, duy nhất trong pack
+#   file      đường dẫn ảnh (tương đối so với file này)
+#   label     chữ hiển thị dưới meme
+#   priority  hệ số nhân điểm (mặc định 1.0). Tư thế tay/cơ thể đặt cao hơn
+#             biểu cảm khuôn mặt để không bị nụ cười "cướp" mất.
+#   when      các đặc trưng CẦN có:   ten_dac_trung = trọng_số
+#   not       các đặc trưng KHÔNG được có
+#
+# Điểm = priority * trung bình nhân có trọng số của các đặc trưng (0..1).
+# Đặc trưng nặng ký mà thiếu -> điểm gần 0; đặc trưng nhẹ ký chỉ làm giảm chút ít.
+# Chạy `memtion --debug` để xem giá trị đặc trưng trực tiếp và chỉnh ở đây.
+#
+# Danh sách đặc trưng (đều nằm trong khoảng 0..1):
+#   Mặt:  face smile mouth_open eyes_closed eyes_wide squint eyes_shut brow_up
+#         brow_down frown pucker smirk grimace cheek_puff lips_pressed look_up gaze_up
+#         head_up head_down head_turn head_tilt peek
+#   Tay theo vùng quanh mặt, với <vùng> = chin neck cheek side head front above:
+#         hand_<vùng>       (ít nhất 1 tay ở đó)
+#         one_hand_<vùng>   (đúng 1 tay)
+#         both_hands_<vùng> (cả 2 tay)
+#   Khác: thumbs_up thumbs_down pointing arms_crossed lean hands_free hands_visible
+
+[pack]
+name = "Meme gốc"
+order = 0
+
+[settings]
+fallback = "blank_stare"  # meme hiện khi không có gì khớp đủ mạnh
+min_score = 0.5           # điểm tối thiểu để một meme được chọn
+smoothing = 0.4           # 0..1, nhỏ hơn = mượt hơn nhưng phản ứng chậm hơn
+hold_frames = 4           # số khung hình meme mới phải dẫn đầu trước khi đổi
+switch_margin = 0.05      # meme mới phải hơn meme hiện tại ít nhất chừng này
+
+# Ghi đè ngưỡng [thấp, cao] của đặc trưng (xem memtion/features.py).
+# Giá trị thô <= thấp -> 0, >= cao -> 1.
+[thresholds]
+# smile = [0.25, 0.65]
+# head_down = [8.0, 22.0]   # độ
+
+# ------------------------------------------------------------ cử chỉ tay / cơ thể
+
+[[meme]]
+id = "break_free"
+file = "../Sample_Meme/1793893440321_409064391710915618_8131572993206959446_4f8fc097d01153e22f971562367cd720.jpg"
+label = "Tự do rồi!"
+priority = 1.3
+when = { both_hands_above = 1.0 }
+
+[[meme]]
+id = "thumbs_up"
+file = "../Sample_Meme/1793893439837_409064391710915618_8131572993206959446_111c1dc81a59bda0044e5532d7418d23.jpg"
+label = "Ok, duyệt!"
+priority = 1.25
+when = { thumbs_up = 1.0 }
+
+[[meme]]
+id = "pointing"
+file = "../Sample_Meme/1793893439519_409064391710915618_8131572993206959446_ae3cdb6ff75628dc6ffefab4711827f3.jpg"
+label = "Nhìn kìa!"
+priority = 1.2
+when = { pointing = 1.0, mouth_open = 0.4 }
+
+[[meme]]
+id = "shocked"
+file = "../Sample_Meme/1793893439581_409064391710915618_8131572993206959446_0e63018fd56505023572f7f65617c8c9.jpg"
+label = "Không thể tin được!"
+priority = 1.2
+when = { both_hands_head = 1.0, mouth_open = 0.6, eyes_wide = 0.3 }
+not = { smile = 0.3 }
+
+[[meme]]
+id = "crying"
+file = "../Sample_Meme/1793893439388_409064391710915618_8131572993206959446_232fee49b761bf8ed95941087454383a.jpg"
+label = "Huhu..."
+priority = 1.2
+when = { both_hands_cheek = 1.0, brow_up = 0.4 }
+not = { smile = 0.5, eyes_wide = 0.4 }
+
+[[meme]]
+id = "sweet"
+file = "../Sample_Meme/1793893439315_409064391710915618_8131572993206959446_f094d34eb95287366026d4717ca44064.jpg"
+label = "Dễ thương hông?"
+priority = 1.2
+when = { both_hands_chin = 1.0, smile = 0.6 }
+
+[[meme]]
+id = "choking"
+file = "../Sample_Meme/1793893439449_409064391710915618_8131572993206959446_ec926856e84d56a9f064fea5d4a019fb.jpg"
+label = "Nghẹt thở luôn á"
+priority = 1.15
+when = { hand_neck = 1.0, grimace = 0.3, eyes_shut = 0.1 }
+not = { smile = 0.5 }
+
+[[meme]]
+id = "phone_call"
+file = "../Sample_Meme/1793893439714_409064391710915618_8131572993206959446_24207d29861532879cfed9fde0f2ff1f.jpg"
+label = "Alo, nghe nè?"
+priority = 1.15
+when = { one_hand_side = 1.0 }
+not = { hand_head = 0.4, both_hands_cheek = 0.5 }
+
+[[meme]]
+id = "smug"
+file = "../Sample_Meme/1793893439954_409064391710915618_8131572993206959446_81a97267018b159f1b933f0d1046131a.jpg"
+label = "Hehe, biết rồi"
+priority = 1.15
+when = { one_hand_head = 1.0, smile = 0.3 }
+not = { mouth_open = 0.3 }
+
+[[meme]]
+id = "hug"
+file = "../Sample_Meme/1793893440079_409064391710915618_8131572993206959446_4be9aa9be6859c9662f753b2e12bd165.jpg"
+label = "Tự ôm bản thân"
+priority = 1.15
+when = { arms_crossed = 1.0, smile = 0.3 }
+not = { hand_neck = 0.5 }
+
+[[meme]]
+id = "thinking_side"
+file = "../Sample_Meme/1793893440018_409064391710915618_8131572993206959446_4ebdcc7d66df9f8acfb4cb42b312011b.jpg"
+label = "Để suy nghĩ đã..."
+priority = 1.1
+when = { one_hand_chin = 1.0, head_turn = 1.0 }
+not = { hand_neck = 1.0 }
+
+[[meme]]
+id = "thinking"
+file = "../Sample_Meme/1793893439786_409064391710915618_8131572993206959446_a1f2438217da5f1254bed3acf9f94091.jpg"
+label = "Hmm..."
+priority = 1.1
+when = { one_hand_chin = 1.0, gaze_up = 0.3 }
+not = { eyes_shut = 0.3, grimace = 0.6, hand_neck = 1.0 }
+
+[[meme]]
+id = "reading"
+file = "../Sample_Meme/1793893439129_409064391710915618_8131572993206959446_e5a8f3f34e0ae2f69f76c43e4e0c107c.jpg"
+label = "Đọc kỹ lại xem nào"
+priority = 1.1
+when = { head_down = 1.0, hand_front = 0.8 }
+not = { smile = 0.3 }
+
+# ------------------------------------------------------------ biểu cảm khuôn mặt
+
+[[meme]]
+id = "laughing"
+file = "../Sample_Meme/1793893439897_409064391710915618_8131572993206959446_5deea557fd2b2f82497dffd8c8a968fb.jpg"
+label = "Hahaha!"
+priority = 1.05
+when = { smile = 1.0, mouth_open = 1.0 }
+
+[[meme]]
+id = "grin"
+file = "../Sample_Meme/1793893439254_409064391710915618_8131572993206959446_3bf9130d02b092c7e13744c5b62efa90.jpg"
+label = "Hí hí"
+when = { smile = 1.0, hands_free = 0.5 }
+not = { mouth_open = 0.6, eyes_shut = 0.3 }
+
+[[meme]]
+id = "content"
+file = "../Sample_Meme/1793893440204_409064391710915618_8131572993206959446_a69b0172fc8410b59ad830af40150673.jpg"
+label = "Phê..."
+when = { eyes_closed = 1.0, head_up = 1.0 }
+not = { hand_neck = 0.5 }
+
+[[meme]]
+id = "confused"
+file = "../Sample_Meme/1793893439649_409064391710915618_8131572993206959446_f97a89def55e040bf481ff338445b592.jpg"
+label = "Hả???"
+when = { head_tilt = 1.0, hands_free = 0.5 }
+not = { smile = 0.5, head_down = 0.3 }
+
+[[meme]]
+id = "lone_wolf"
+file = "../Sample_Meme/1793893440139_409064391710915618_8131572993206959446_670c9b022e0629060d5a4bb05e906c1d.jpg"
+label = "Sói cô độc"
+when = { head_turn = 1.0, hands_free = 0.8 }
+not = { smile = 0.4 }
+
+[[meme]]
+id = "defeated"
+file = "../Sample_Meme/1793893439188_409064391710915618_8131572993206959446_1b2228aa8a586c6f5cc7ec2ca564345b.jpg"
+label = "Mệt mỏi quá rồi"
+when = { lean = 1.0, head_down = 0.6, hands_free = 0.5 }
+not = { smile = 0.3 }
+
+[[meme]]
+id = "blank_stare"
+file = "../Sample_Meme/1793893440266_409064391710915618_8131572993206959446_2f7aca47e3f8a549484814196c404812.jpg"
+label = "..."
+when = { frown = 1.0, hands_free = 0.5 }
+not = { smile = 0.5 }
