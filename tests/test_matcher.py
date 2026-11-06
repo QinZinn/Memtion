@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from memtion.features import FEATURE_NAMES
-from memtion.matcher import ConfigError, Meme, Settings, Smoother, load_config, rank
+from memtion.matcher import ConfigError, Meme, Settings, Smoother, discover_packs, load_config, rank
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -47,13 +47,25 @@ def test_smoother_hold_and_fallback():
     assert current == "idle"
 
 
-def test_bundled_config_covers_all_sample_memes():
-    config = load_config(ROOT / "memes.toml")
+@pytest.mark.parametrize(("pack", "folder", "count"), [("default", "Sample_Meme", 20), ("blob", "Blob_Meme", 31)])
+def test_bundled_pack_covers_its_images(pack, folder, count):
+    config = load_config(ROOT / "packs" / f"{pack}.toml")
     files = {m.file.name for m in config.memes}
-    samples = {p.name for p in (ROOT / "Sample_Meme").glob("*.jpg")}
-    assert files == samples
-    assert len(config.memes) == len(samples) == 20
+    images = {p.name for p in (ROOT / folder).iterdir() if p.suffix in (".jpg", ".png")}
+    assert files == images
+    assert len(config.memes) == count
     assert config.settings.fallback in {m.id for m in config.memes}
+
+
+def test_discover_packs_sorted_and_reports_errors(tmp_path):
+    (tmp_path / "a.jpg").write_bytes(b"x")
+    meme = '[[meme]]\nid = "a"\nfile = "a.jpg"\nwhen = { smile = 1.0 }\n'
+    (tmp_path / "z.toml").write_text('[pack]\nname = "Zed"\norder = 0\n' + meme)
+    (tmp_path / "b.toml").write_text('[pack]\nname = "Bee"\norder = 5\n' + meme)
+    (tmp_path / "broken.toml").write_text("[[meme]]\nid = 1\n")
+    packs, errors = discover_packs(tmp_path)
+    assert [p.name for p in packs] == ["Zed", "Bee"]
+    assert len(errors) == 1 and "broken.toml" in errors[0]
 
 
 def test_config_rejects_unknown_feature(tmp_path):

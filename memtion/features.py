@@ -48,6 +48,8 @@ DEFAULT_THRESHOLDS: dict[str, tuple[float, float]] = {
     "pucker": (0.3, 0.7),
     "smirk": (0.12, 0.35),
     "grimace": (0.12, 0.4),
+    "cheek_puff": (0.15, 0.45),
+    "lips_pressed": (0.15, 0.45),
     "look_up": (0.15, 0.5),
     "head_up": (8.0, 22.0),  # degrees
     "head_down": (8.0, 22.0),  # degrees
@@ -55,6 +57,7 @@ DEFAULT_THRESHOLDS: dict[str, tuple[float, float]] = {
     "head_tilt": (9.0, 22.0),  # degrees
     "lean": (6.0, 16.0),  # degrees of shoulder line
     "thumbs_up": (0.4, 0.7),  # gesture recogniser score
+    "peek": (0.2, 0.08),  # nose distance to left/right frame edge, as a fraction of width
     "zone": (1.6, 1.0),  # normalised ellipse distance -> membership
 }
 
@@ -83,6 +86,9 @@ FACE_FEATURES = (
     "pucker",
     "smirk",
     "grimace",
+    "cheek_puff",
+    "lips_pressed",
+    "peek",
     "look_up",
     "head_up",
     "head_down",
@@ -91,7 +97,7 @@ FACE_FEATURES = (
     "gaze_up",
 )
 HAND_ZONE_NAMES = (*ZONES, "above")
-BODY_FEATURES = ("lean", "arms_crossed", "thumbs_up", "pointing", "hands_free", "hands_visible")
+BODY_FEATURES = ("lean", "arms_crossed", "thumbs_up", "thumbs_down", "pointing", "hands_free", "hands_visible")
 
 
 def _zone_feature_names() -> tuple[str, ...]:
@@ -240,11 +246,13 @@ def compute_features(
             pucker=max(b.get("mouthPucker", 0.0), b.get("mouthFunnel", 0.0)),
             smirk=abs(smile_l - smile_r),
             grimace=avg("mouthStretchLeft", "mouthStretchRight", "mouthUpperUpLeft", "mouthUpperUpRight"),
+            cheek_puff=b.get("cheekPuff", 0.0),
+            lips_pressed=avg("mouthPressLeft", "mouthPressRight", "mouthShrugLower"),
             look_up=avg("eyeLookUpLeft", "eyeLookUpRight"),
         )
         for name in (
             "smile", "mouth_open", "eyes_closed", "eyes_wide", "squint", "brow_up",
-            "brow_down", "frown", "pucker", "grimace", "look_up",
+            "brow_down", "frown", "pucker", "grimace", "look_up", "cheek_puff", "lips_pressed",
         ):  # fmt: skip
             feats[name] = ramp(raw[name], *th[name])
         feats["smirk"] = ramp(raw["smirk"], *th["smirk"]) * ramp(max(smile_l, smile_r), 0.15, 0.4)
@@ -259,6 +267,10 @@ def compute_features(
             feats["head_tilt"] = ramp(abs(roll), *th["head_tilt"])
     feats["gaze_up"] = max(feats["look_up"], feats["head_up"])
     feats["eyes_shut"] = max(feats["eyes_closed"], feats["squint"])
+    if obs.face is not None and obs.width > 0:
+        nose_x = float(obs.face[NOSE_TIP, 0])
+        raw["edge"] = min(nose_x, obs.width - nose_x) / obs.width
+        feats["peek"] = ramp(raw["edge"], *th["peek"])
 
     # ---------------------------------------------------------------- hands
     frame = face_frame(obs)
@@ -283,8 +295,9 @@ def compute_features(
     else:
         feats["hands_free"] = 1.0
 
-    thumbs = [h.gesture_score for h in obs.hands if h.gesture == "Thumb_Up"]
-    feats["thumbs_up"] = ramp(max(thumbs, default=0.0), *th["thumbs_up"])
+    for name, gesture in (("thumbs_up", "Thumb_Up"), ("thumbs_down", "Thumb_Down")):
+        scores = [h.gesture_score for h in obs.hands if h.gesture == gesture]
+        feats[name] = ramp(max(scores, default=0.0), *th["thumbs_up"])
     feats["pointing"] = max((pointing_score(h) for h in obs.hands), default=0.0)
 
     # ---------------------------------------------------------------- body

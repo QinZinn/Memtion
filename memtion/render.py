@@ -93,7 +93,7 @@ class MemePanel:
         self._cache: dict[tuple[str, int], np.ndarray] = {}
 
     def render(self, meme_id: str | None, image_path: Path | None, label: str) -> np.ndarray:
-        key = (meme_id or "", self.size)
+        key = (str(image_path), label)  # ids can repeat across packs; files don't
         if key not in self._cache:
             panel = np.full((self.size, self.size, 3), BG, dtype=np.uint8)
             body = self.size - self.LABEL_H

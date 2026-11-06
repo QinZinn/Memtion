@@ -27,7 +27,7 @@ def detector():
 def test_human_meme_matches_itself(detector, meme_id):
     from memtion.features import compute_features
 
-    config = load_config(ROOT / "memes.toml")
+    config = load_config(ROOT / "packs" / "default.toml")
     meme = config.by_id(meme_id)
     frame = cv2.cvtColor(cv2.imread(str(meme.file)), cv2.COLOR_BGR2RGB)
     feats, _ = compute_features(detector.process(frame), config.thresholds)

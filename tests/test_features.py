@@ -127,3 +127,22 @@ def test_no_face_still_detects_arms_raised():
     hands = [hand_at(-1.5, -2.5), hand_at(1.5, -2.5)]
     feats, _ = compute_features(observation(hands=hands, with_face=False, pose=_pose_person()))
     assert feats["both_hands_above"] == 1.0
+
+
+def test_new_face_features():
+    feats, _ = compute_features(observation({"cheekPuff": 0.6, "mouthPressLeft": 0.5, "mouthPressRight": 0.5}))
+    assert feats["cheek_puff"] == 1.0
+    assert feats["lips_pressed"] > 0.5
+
+
+def test_thumbs_down_gesture():
+    feats, _ = compute_features(observation(hands=[hand_at(2.0, 1.0, gesture="Thumb_Down", gesture_score=0.9)]))
+    assert feats["thumbs_down"] == 1.0
+    assert feats["thumbs_up"] == 0.0
+
+
+def test_peek_when_face_at_frame_edge():
+    obs = observation()
+    assert compute_features(obs)[0]["peek"] == 0.0  # nose in the middle of a 640px frame
+    obs.face[:, 0] -= 290  # move the face to x ~= 30px
+    assert compute_features(obs)[0]["peek"] == 1.0

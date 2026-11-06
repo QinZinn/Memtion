@@ -57,6 +57,9 @@ class Config:
     memes: list[Meme]
     settings: Settings
     thresholds: dict[str, tuple[float, float]]
+    name: str = ""
+    order: int = 100
+    path: Path | None = None
 
     def by_id(self, meme_id: str) -> Meme:
         for m in self.memes:
@@ -128,7 +131,30 @@ def load_config(path: str | Path, check_files: bool = True) -> Config:
         raise ConfigError("no [[meme]] entries found")
     if settings.fallback is not None and settings.fallback not in seen:
         raise ConfigError(f"[settings].fallback '{settings.fallback}' is not a meme id")
-    return Config(memes=memes, settings=settings, thresholds=thresholds)
+    pack = data.get("pack", {})
+    return Config(
+        memes=memes,
+        settings=settings,
+        thresholds=thresholds,
+        name=str(pack.get("name", path.stem)),
+        order=int(pack.get("order", 100)),
+        path=path,
+    )
+
+
+def discover_packs(folder: str | Path) -> tuple[list[Config], list[str]]:
+    """Load every `*.toml` pack in `folder`, sorted by [pack].order then name.
+
+    Returns (packs, errors); a broken pack is reported instead of stopping the app.
+    """
+    packs, errors = [], []
+    for path in sorted(Path(folder).glob("*.toml")):
+        try:
+            packs.append(load_config(path))
+        except (ConfigError, OSError, tomllib.TOMLDecodeError) as exc:
+            errors.append(f"{path.name}: {exc}")
+    packs.sort(key=lambda c: (c.order, c.name))
+    return packs, errors
 
 
 def rank(memes: list[Meme], features: dict[str, float]) -> list[tuple[str, float]]:

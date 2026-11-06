@@ -1,0 +1,250 @@
+# Memtion - pack "Blob": 31 meme mặt vẽ tay trong Blob_Meme/.
+# Hầu hết là biểu cảm khuôn mặt, nên pack này "đọc mặt" nhiều hơn pack gốc.
+# Cú pháp và danh sách đặc trưng: xem packs/default.toml.
+#
+# Một số meme không có biểu cảm tương ứng mà MediaPipe đo được (lè lưỡi, đeo kính,
+# hề, bó hoa...) nên được gán cho một tư thế "gần nghĩa" nhất, ghi trong label.
+
+[pack]
+name = "Blob"
+order = 1
+
+[settings]
+fallback = "deadpan"
+min_score = 0.5
+smoothing = 0.4
+hold_frames = 4
+switch_margin = 0.05
+
+# ------------------------------------------------------------ tay / cử chỉ
+
+[[meme]]
+id = "thumbs_down"
+file = "../Blob_Meme/24_thumbs_down.png"
+label = "Không ổn rồi"
+priority = 1.25
+when = { thumbs_down = 1.0 }
+
+[[meme]]
+id = "nerd"
+file = "../Blob_Meme/31_nerd.png"
+label = "Chuẩn không cần chỉnh"
+priority = 1.25
+when = { thumbs_up = 1.0 }
+
+[[meme]]
+id = "heart_hands"
+file = "../Blob_Meme/20_heart_hands.png"
+label = "Thương thương"
+priority = 1.15
+when = { hands_visible = 1.0, smile = 0.6 }
+not = { hands_free = 0.4 }
+
+[[meme]]
+id = "oxygen"
+file = "../Blob_Meme/12_oxygen.png"
+label = "Thở oxy gấp"
+priority = 1.15
+when = { hand_chin = 1.0, eyes_shut = 0.6 }
+
+[[meme]]
+id = "flowers"
+file = "../Blob_Meme/15_flowers.png"
+label = "Tặng bạn nè"
+priority = 1.1
+when = { hand_front = 1.0, smile = 0.4 }
+
+[[meme]]
+id = "peek"
+file = "../Blob_Meme/28_peek.png"
+label = "Ló mặt xem thử"
+priority = 1.1
+when = { peek = 1.0 }
+
+# ------------------------------------------------------------ miệng há to
+
+[[meme]]
+id = "laugh"
+file = "../Blob_Meme/26_laugh.png"
+label = "Hahaha"
+priority = 1.05
+when = { smile = 1.0, mouth_open = 1.0 }
+not = { eyes_shut = 0.4 }
+
+[[meme]]
+id = "tongue_crazy"
+file = "../Blob_Meme/03_tongue_crazy.png"
+label = "Cười điên dại"
+priority = 1.05
+when = { smile = 0.6, mouth_open = 1.0, eyes_shut = 1.0 }
+
+[[meme]]
+id = "crying_waterfall"
+file = "../Blob_Meme/02_crying_waterfall.png"
+label = "Khóc như mưa"
+priority = 1.05
+when = { mouth_open = 1.0, brow_up = 0.6, eyes_shut = 0.6 }
+not = { smile = 0.5 }
+
+[[meme]]
+id = "horror"
+file = "../Blob_Meme/13_horror.png"
+label = "Kinh hoàng!"
+priority = 1.05
+when = { mouth_open = 1.0, brow_up = 1.0, eyes_wide = 0.5 }
+not = { smile = 0.5 }
+
+[[meme]]
+id = "angry"
+file = "../Blob_Meme/22_angry.png"
+label = "Tức điên!"
+priority = 1.05
+when = { mouth_open = 1.0, brow_down = 1.0 }
+
+[[meme]]
+id = "sweating"
+file = "../Blob_Meme/08_sweating.png"
+label = "Nóng quá trời"
+when = { eyes_shut = 1.0, mouth_open = 0.7 }
+not = { smile = 0.5, brow_up = 0.4 }
+
+[[meme]]
+id = "sad_open"
+file = "../Blob_Meme/07_sad_open.png"
+label = "Sao lại thế..."
+when = { frown = 1.0, mouth_open = 0.6 }
+not = { eyes_shut = 0.4, smile = 0.5 }
+
+[[meme]]
+id = "aaa"
+file = "../Blob_Meme/29_aaa.png"
+label = "AAAAA"
+when = { mouth_open = 1.0 }
+not = { smile = 0.5, brow_up = 0.5, brow_down = 0.5, eyes_shut = 0.3, frown = 0.4, head_tilt = 0.4 }
+
+[[meme]]
+id = "bleh"
+file = "../Blob_Meme/05_bleh.png"
+label = "Lêu lêu (nghiêng đầu + hé miệng)"
+when = { head_tilt = 1.0, mouth_open = 0.5 }
+not = { smile = 0.3 }
+
+# ------------------------------------------------------------ cười, miệng khép
+
+[[meme]]
+id = "clown"
+file = "../Blob_Meme/17_clown.png"
+label = "Cười gượng như hề"
+when = { smile = 1.0, eyes_wide = 1.0 }
+not = { mouth_open = 0.4 }
+
+[[meme]]
+id = "squint_smile"
+file = "../Blob_Meme/23_squint_smile.png"
+label = "Hí hí"
+when = { smile = 1.0, squint = 1.0 }
+not = { mouth_open = 0.5, eyes_closed = 0.4 }
+
+[[meme]]
+id = "bliss"
+file = "../Blob_Meme/04_bliss.png"
+label = "Thư giãn..."
+when = { eyes_closed = 1.0, smile = 0.5 }
+not = { mouth_open = 0.5 }
+
+[[meme]]
+id = "shy"
+file = "../Blob_Meme/21_shy.png"
+label = "Ngại quá à"
+when = { smile = 0.8, head_down = 1.0 }
+not = { mouth_open = 0.4 }
+
+[[meme]]
+id = "cheeky"
+file = "../Blob_Meme/27_cheeky.png"
+label = "Tinh nghịch"
+when = { smile = 0.8, head_tilt = 1.0 }
+not = { mouth_open = 0.3 }
+
+[[meme]]
+id = "sly"
+file = "../Blob_Meme/16_sly.png"
+label = "Có âm mưu"
+priority = 1.05
+when = { smirk = 1.0, brow_down = 0.3 }
+not = { mouth_open = 0.4 }
+
+[[meme]]
+id = "smile"
+file = "../Blob_Meme/06_smile.png"
+label = "Cười mỉm"
+when = { smile = 1.0 }
+not = { mouth_open = 0.6, eyes_shut = 0.4, eyes_wide = 0.4, smirk = 0.3, head_down = 0.4, head_tilt = 0.4, hand_front = 0.3 }
+
+# ------------------------------------------------------------ môi / má
+
+[[meme]]
+id = "kiss"
+file = "../Blob_Meme/11_kiss.png"
+label = "Chụt!"
+priority = 1.05
+when = { pucker = 1.0, eyes_shut = 1.0 }
+
+[[meme]]
+id = "lips"
+file = "../Blob_Meme/09_lips.png"
+label = "Môi chu chu"
+when = { pucker = 1.0 }
+not = { eyes_shut = 0.5 }
+
+[[meme]]
+id = "puffed"
+file = "../Blob_Meme/25_puffed.png"
+label = "Phồng má"
+priority = 1.05
+when = { cheek_puff = 1.0 }
+
+[[meme]]
+id = "pout"
+file = "../Blob_Meme/19_pout.png"
+label = "Mím môi tủi thân"
+when = { lips_pressed = 1.0 }
+not = { smile = 0.5 }
+
+# ------------------------------------------------------------ buồn / khó chịu / bình thường
+
+[[meme]]
+id = "worried"
+file = "../Blob_Meme/18_worried.png"
+label = "Lo lắng"
+when = { frown = 1.0, brow_up = 0.6 }
+not = { mouth_open = 0.5 }
+
+[[meme]]
+id = "disgust"
+file = "../Blob_Meme/14_disgust.png"
+label = "Khó chịu ghê"
+when = { brow_down = 1.0, frown = 0.6 }
+not = { mouth_open = 0.5 }
+
+[[meme]]
+id = "serious"
+file = "../Blob_Meme/30_serious.png"
+label = "Nghiêm túc"
+when = { brow_down = 1.0 }
+not = { frown = 0.5, mouth_open = 0.5, smile = 0.5 }
+
+[[meme]]
+id = "working"
+file = "../Blob_Meme/10_working.png"
+label = "Đang làm việc (cúi đầu)"
+when = { head_down = 1.0 }
+not = { smile = 0.4 }
+
+[[meme]]
+id = "deadpan"
+file = "../Blob_Meme/01_deadpan.png"
+label = "..."
+priority = 0.85
+when = { face = 1.0 }
+not = { smile = 0.5, mouth_open = 0.5, frown = 0.5, brow_down = 0.5, brow_up = 0.5 }

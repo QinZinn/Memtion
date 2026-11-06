@@ -6,6 +6,8 @@ import sys
 import urllib.request
 from pathlib import Path
 
+from memtion.paths import RESOURCE_ROOT
+
 _BASE = "https://storage.googleapis.com/mediapipe-models"
 
 MODELS = {
@@ -24,7 +26,7 @@ MODELS = {
     ),
 }
 
-DEFAULT_MODEL_DIR = Path(__file__).resolve().parent.parent / "models"
+DEFAULT_MODEL_DIR = RESOURCE_ROOT / "models"
 
 
 def ensure_model(key: str, model_dir: Path = DEFAULT_MODEL_DIR) -> Path:
