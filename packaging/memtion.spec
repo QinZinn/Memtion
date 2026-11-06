@@ -42,7 +42,7 @@ if is_mac:
         name="Memtion.app",
         bundle_identifier="io.github.qinzinn.memtion",
         info_plist={
-            "CFBundleShortVersionString": "0.1.0",
+            "CFBundleShortVersionString": "0.1.1",
             "NSCameraUsageDescription": "Memtion dùng camera để nhận diện biểu cảm và tư thế của bạn.",
             "NSHighResolutionCapable": True,
         },

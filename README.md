@@ -9,7 +9,7 @@ Mở webcam, theo dõi khuôn mặt + tay + cơ thể, rồi hiện **meme có t
 ```
 ┌──────────────────────┬──────────────────┐
 │   camera (gương)     │      meme        │
-│   + overlay debug    │   "Hahaha!"      │
+│   + overlay debug    │                  │
 └──────────────────────┴──────────────────┘
 ```
 
@@ -64,6 +64,7 @@ memtion            # hoặc: python -m memtion
 | `q` / `Esc` | thoát |
 | `p` | đổi pack meme (Meme gốc ↔ Blob) |
 | `d` | bật/tắt overlay debug (điểm mốc, điểm số từng meme, giá trị đặc trưng) |
+| `l` | bật/tắt tên meme bên dưới ảnh (mặc định tắt; `--labels` để bật sẵn) |
 | `c` | **hiệu chỉnh**: nhìn thẳng với mặt bình thường ~1 giây, app sẽ lấy đó làm mốc "trung tính" |
 | `m` | bật/tắt lật gương |
 | `s` | lưu ảnh chụp màn hình vào `screenshots/` |
