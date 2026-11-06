@@ -2,6 +2,10 @@
 
 Mở webcam, theo dõi khuôn mặt + tay + cơ thể, rồi hiện **meme có tư thế / biểu cảm giống bạn nhất** ngay bên cạnh hình camera.
 
+![Demo](docs/images/demo.gif)
+
+📖 **[Hướng dẫn sử dụng](docs/HUONG_DAN.md)**: cài đặt, phím tắt, bảng tư thế → meme của cả 2 pack, mẹo và xử lý sự cố.
+
 ```
 ┌──────────────────────┬──────────────────┐
 │   camera (gương)     │      meme        │

@@ -54,6 +54,8 @@ DEFAULT = {
     "phone_call": dict(hand_side=1, one_hand_side=1, hands_free=0, hands_visible=0.5),
     "choking": dict(hand_neck=1, both_hands_neck=1, squint=1, eyes_shut=1, grimace=1, hands_free=0),
     "thinking_side": dict(hand_chin=1, one_hand_chin=1, head_turn=1, hands_free=0),
+    # A fist under the chin also brushes the neck zone a little.
+    "thinking": dict(hand_chin=1, one_hand_chin=1, hand_neck=0.45, gaze_up=1, hands_free=0),
     "laughing": dict(smile=1, mouth_open=1),
     "grin": dict(smile=1),
     "content": dict(eyes_closed=1, eyes_shut=1, head_up=1, gaze_up=1),

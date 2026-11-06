@@ -93,7 +93,8 @@ id = "choking"
 file = "../Sample_Meme/1793893439449_409064391710915618_8131572993206959446_ec926856e84d56a9f064fea5d4a019fb.jpg"
 label = "Nghẹt thở luôn á"
 priority = 1.15
-when = { hand_neck = 1.0, eyes_shut = 0.7, grimace = 0.4 }
+when = { hand_neck = 1.0, grimace = 0.3, eyes_shut = 0.1 }
+not = { smile = 0.5 }
 
 [[meme]]
 id = "phone_call"
@@ -125,6 +126,7 @@ file = "../Sample_Meme/1793893440018_409064391710915618_8131572993206959446_4ebd
 label = "Để suy nghĩ đã..."
 priority = 1.1
 when = { one_hand_chin = 1.0, head_turn = 1.0 }
+not = { hand_neck = 1.0 }
 
 [[meme]]
 id = "thinking"
@@ -132,7 +134,7 @@ file = "../Sample_Meme/1793893439786_409064391710915618_8131572993206959446_a1f2
 label = "Hmm..."
 priority = 1.1
 when = { one_hand_chin = 1.0, gaze_up = 0.3 }
-not = { eyes_shut = 0.3 }
+not = { eyes_shut = 0.3, grimace = 0.6, hand_neck = 1.0 }
 
 [[meme]]
 id = "reading"

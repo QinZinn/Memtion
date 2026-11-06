@@ -45,7 +45,8 @@ id = "oxygen"
 file = "../Blob_Meme/12_oxygen.png"
 label = "Thở oxy gấp"
 priority = 1.15
-when = { hand_chin = 1.0, eyes_shut = 0.6 }
+when = { hand_chin = 1.0, eyes_shut = 0.2 }
+not = { smile = 0.5 }
 
 [[meme]]
 id = "flowers"
@@ -119,7 +120,7 @@ not = { eyes_shut = 0.4, smile = 0.5 }
 id = "aaa"
 file = "../Blob_Meme/29_aaa.png"
 label = "AAAAA"
-when = { mouth_open = 1.0 }
+when = { mouth_open = 1.0, hands_free = 0.5 }
 not = { smile = 0.5, brow_up = 0.5, brow_down = 0.5, eyes_shut = 0.3, frown = 0.4, head_tilt = 0.4 }
 
 [[meme]]
@@ -224,14 +225,14 @@ not = { mouth_open = 0.5 }
 id = "disgust"
 file = "../Blob_Meme/14_disgust.png"
 label = "Khó chịu ghê"
-when = { brow_down = 1.0, frown = 0.6 }
+when = { brow_down = 1.0, frown = 0.6, hands_free = 1.0 }
 not = { mouth_open = 0.5 }
 
 [[meme]]
 id = "serious"
 file = "../Blob_Meme/30_serious.png"
 label = "Nghiêm túc"
-when = { brow_down = 1.0 }
+when = { brow_down = 1.0, hands_free = 1.0 }
 not = { frown = 0.5, mouth_open = 0.5, smile = 0.5 }
 
 [[meme]]
@@ -246,5 +247,5 @@ id = "deadpan"
 file = "../Blob_Meme/01_deadpan.png"
 label = "..."
 priority = 0.85
-when = { face = 1.0 }
+when = { face = 1.0, hands_free = 0.5 }
 not = { smile = 0.5, mouth_open = 0.5, frown = 0.5, brow_down = 0.5, brow_up = 0.5 }

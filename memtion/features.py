@@ -65,7 +65,7 @@ DEFAULT_THRESHOLDS: dict[str, tuple[float, float]] = {
 # Zones flagged symmetric use |u|, i.e. they exist on both sides of the face.
 ZONES: dict[str, tuple[float, float, float, float, bool]] = {
     "chin": (0.0, 0.62, 0.45, 0.32, False),  # hand on / under the chin
-    "neck": (0.0, 1.2, 0.7, 0.35, False),  # hands at the throat
+    "neck": (0.0, 1.25, 0.7, 0.3, False),  # hands at the throat (kept clear of a fist under the chin)
     "cheek": (0.4, 0.15, 0.4, 0.4, True),  # hands covering cheeks / eyes
     "side": (0.8, 0.25, 0.4, 0.45, True),  # by the ear (phone call)
     "head": (0.0, -0.7, 1.1, 0.55, False),  # on top / sides of the head

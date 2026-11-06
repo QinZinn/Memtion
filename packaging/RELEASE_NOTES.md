@@ -30,3 +30,5 @@ tar -xzf Memtion-*-linux-x64.tar.gz && ./memtion/memtion
 `p` đổi pack · `c` hiệu chỉnh mặt (nên bấm 1 lần khi mới ngồi vào) · `d` debug · `s` chụp màn hình · `q` thoát
 
 Muốn thêm pack meme riêng: đặt file `.toml` vào `%APPDATA%\memtion\packs` (Windows), `~/Library/Application Support/memtion/packs` (macOS) hoặc `~/.config/memtion/packs` (Linux). Chạy `memtion --list` để xem các pack đang có.
+
+📖 Hướng dẫn đầy đủ (kèm ảnh và bảng tư thế → meme): https://github.com/QinZinn/Memtion/blob/main/docs/HUONG_DAN.md
