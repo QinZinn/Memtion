@@ -88,8 +88,8 @@ memtion --image anh.jpg --out ketqua.jpg   # phân tích 1 ảnh, in điểm s�
 App có 2 pack, bấm `p` để đổi:
 
 - **Meme gốc** (`packs/default.toml`, ảnh trong `Sample_Meme/`): 20 meme, thiên về tư thế tay và cơ thể (bảng bên dưới).
-- **Blob** (`packs/blob.toml`, ảnh trong `Blob_Meme/`): 31 mặt vẽ tay, thiên về biểu cảm khuôn mặt: cười, khóc,
-  há miệng, chu môi, phồng má, mím môi, nhíu mày, nghiêng/cúi đầu, ngón cái lên/xuống, ló mặt từ mép khung hình…
+- **Blob** (`packs/blob.toml`, ảnh trong `Blob_Meme/`): 30 mặt vẽ tay, thiên về biểu cảm khuôn mặt: cười, khóc,
+  há miệng, chu môi, phồng má, mím môi, nhíu mày, nghiêng/cúi đầu, ngón cái lên/xuống…
   Vài meme không có biểu cảm tương ứng đo được (lè lưỡi, đeo kính, hề, bó hoa) nên được gán cho tư thế gần nghĩa
   nhất; xem `label` và luật trong file.
 

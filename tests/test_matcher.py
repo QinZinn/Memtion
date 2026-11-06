@@ -47,7 +47,7 @@ def test_smoother_hold_and_fallback():
     assert current == "idle"
 
 
-@pytest.mark.parametrize(("pack", "folder", "count"), [("default", "Sample_Meme", 20), ("blob", "Blob_Meme", 31)])
+@pytest.mark.parametrize(("pack", "folder", "count"), [("default", "Sample_Meme", 20), ("blob", "Blob_Meme", 30)])
 def test_bundled_pack_covers_its_images(pack, folder, count):
     config = load_config(ROOT / "packs" / f"{pack}.toml")
     files = {m.file.name for m in config.memes}

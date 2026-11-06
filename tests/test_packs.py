@@ -19,7 +19,6 @@ BLOB = {
     "heart_hands": dict(hands_visible=1, smile=1, mouth_open=0.6, hand_chin=1, both_hands_chin=1, hands_free=0),
     "oxygen": dict(hand_chin=1, one_hand_chin=1, eyes_closed=1, eyes_shut=1, hands_free=0, hands_visible=0.5),
     "flowers": dict(hand_front=1, both_hands_front=1, smile=0.8, hands_visible=1),
-    "peek": dict(peek=1),
     "laugh": dict(smile=1, mouth_open=1),
     "tongue_crazy": dict(smile=0.8, mouth_open=1, squint=1, eyes_shut=1),
     "crying_waterfall": dict(mouth_open=1, brow_up=1, eyes_closed=0.8, eyes_shut=0.8, frown=0.5),
