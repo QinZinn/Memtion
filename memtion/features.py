@@ -257,15 +257,6 @@ def compute_features(
             feats["head_down"] = ramp(-pitch, *th["head_down"])
             feats["head_turn"] = ramp(abs(yaw), *th["head_turn"])
             feats["head_tilt"] = ramp(abs(roll), *th["head_tilt"])
-    elif obs.pose is not None:
-        # Face not found (e.g. full profile): estimate head turn from the pose.
-        p = obs.pose
-        if min(p[POSE_NOSE, 2], p[POSE_L_EAR, 2], p[POSE_R_EAR, 2]) > 0.5:
-            ears = (p[POSE_L_EAR, :2] + p[POSE_R_EAR, :2]) / 2
-            ear_w = max(float(np.linalg.norm(p[POSE_L_EAR, :2] - p[POSE_R_EAR, :2])), 1e-6)
-            ratio = abs(float(p[POSE_NOSE, 0] - ears[0])) / ear_w
-            raw["yaw_ratio"] = ratio
-            feats["head_turn"] = ramp(ratio, 0.15, 0.35)
     feats["gaze_up"] = max(feats["look_up"], feats["head_up"])
     feats["eyes_shut"] = max(feats["eyes_closed"], feats["squint"])
 
@@ -273,16 +264,21 @@ def compute_features(
     frame = face_frame(obs)
     feats["hands_visible"] = ramp(len(obs.hands), 0, 2)
     if frame is not None and obs.hands:
+        # Without a face mesh the frame comes from the pose model, which also
+        # "sees" people in drawings and clutter. Only trust it for arms raised
+        # above the head (e.g. a backlit silhouette), not for hand-near-face zones.
+        zones = HAND_ZONE_NAMES if obs.face is not None else ("above",)
         per_hand = []
         for hand in obs.hands:
             uv = frame.to_face(hand.points)
-            per_hand.append({z: zone_membership(uv, z, th["zone"]) for z in HAND_ZONE_NAMES})
-        for zone in HAND_ZONE_NAMES:
+            per_hand.append({z: zone_membership(uv, z, th["zone"]) for z in zones})
+        for zone in zones:
             first, second = _top_two([m[zone] for m in per_hand])
             feats[f"hand_{zone}"] = first
             feats[f"both_hands_{zone}"] = second
             feats[f"one_hand_{zone}"] = first * (1.0 - second)
-        near_face = max(max(m[z] for z in ("chin", "neck", "cheek", "side", "head")) for m in per_hand)
+        face_zones = [z for z in ("chin", "neck", "cheek", "side", "head") if z in zones]
+        near_face = max((m[z] for m in per_hand for z in face_zones), default=0.0)
         feats["hands_free"] = 1.0 - near_face
     else:
         feats["hands_free"] = 1.0

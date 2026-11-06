@@ -103,3 +103,27 @@ def test_arms_crossed_from_pose():
     pose[15, :2], pose[16, :2] = (430, 450), (210, 450)  # uncrossed
     feats, _ = compute_features(observation(pose=pose))
     assert feats["arms_crossed"] == 0.0
+
+
+def _pose_person():
+    pose = np.zeros((33, 3), dtype=np.float32)
+    pose[:, 2] = 1.0
+    pose[0, :2] = (320, 240)  # nose
+    pose[7, :2], pose[8, :2] = (370, 235), (270, 235)  # ears
+    pose[11, :2], pose[12, :2] = (420, 380), (220, 380)  # shoulders
+    return pose
+
+
+def test_no_face_ignores_hand_near_face_zones():
+    # A pose-only detection (no face mesh) is often a false positive on drawings.
+    hand_on_cheek = hand_at(0.4, 0.15)
+    feats, _ = compute_features(observation(hands=[hand_on_cheek], with_face=False, pose=_pose_person()))
+    assert feats["hand_cheek"] == 0.0
+    assert feats["hand_side"] == 0.0
+    assert feats["hands_free"] == 1.0
+
+
+def test_no_face_still_detects_arms_raised():
+    hands = [hand_at(-1.5, -2.5), hand_at(1.5, -2.5)]
+    feats, _ = compute_features(observation(hands=hands, with_face=False, pose=_pose_person()))
+    assert feats["both_hands_above"] == 1.0

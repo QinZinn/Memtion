@@ -53,7 +53,7 @@ def _to_px(landmarks, w: int, h: int) -> np.ndarray:
     return np.array([[lm.x * w, lm.y * h] for lm in landmarks], dtype=np.float32)
 
 
-def merge_pose_hands(hands: list[Hand], pose: np.ndarray | None, min_visibility: float = 0.3) -> list[Hand]:
+def merge_pose_hands(hands: list[Hand], pose: np.ndarray | None, min_visibility: float = 0.5) -> list[Hand]:
     """Add hands seen only by the pose model (e.g. a hand hidden behind the head).
 
     The hand model often misses hands that are partly occluded or out of frame,
