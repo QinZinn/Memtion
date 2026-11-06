@@ -179,15 +179,19 @@ Workflow [`.github/workflows/build.yml`](.github/workflows/build.yml) chạy m�
 1. **Test**: ruff + pytest (kể cả test tích hợp với model thật) trên Ubuntu.
 2. **Build**: PyInstaller trên Windows, macOS (Apple Silicon) và Linux. Mỗi bản build được chạy thử ngay trên
    runner (`--list` và nhận diện một ảnh mẫu phải ra `shocked`) rồi đóng gói thành file tải về trong mục Artifacts.
-3. **Release**: khi push một tag `v*`, các file trên được đính vào một GitHub Release.
+3. **Release**: đính các file trên vào một GitHub Release, theo một trong hai cách:
+   - Push một tag `v*`:
 
-```bash
-git tag v0.1.0
-```
+     ```bash
+     git tag v0.2.0
+     ```
 
-```bash
-git push origin v0.1.0
-```
+     ```bash
+     git push origin v0.2.0
+     ```
+
+   - Hoặc trên GitHub: **Actions → Build → Run workflow**, chọn branch `main`, điền `release_tag` (ví dụ `v0.2.0`).
+     Workflow sẽ tự tạo tag trên commit đó.
 
 Build thử trên máy mình:
 

@@ -6,6 +6,11 @@ on:
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Publish a release with this new tag (e.g. v0.1.0), created on the selected branch. Leave empty to only build."
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -83,9 +88,13 @@ jobs:
 
       - name: Package
         id: package
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then VERSION="${GITHUB_REF_NAME}"; else VERSION="${GITHUB_SHA::7}"; fi
+          if [[ -n "$RELEASE_TAG" ]]; then VERSION="$RELEASE_TAG"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then VERSION="${GITHUB_REF_NAME}"
+          else VERSION="${GITHUB_SHA::7}"; fi
           NAME="Memtion-${VERSION}-${{ matrix.name }}"
           mkdir -p out
           case "${{ runner.os }}" in
@@ -102,12 +111,17 @@ jobs:
 
   release:
     name: Release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.release_tag != ''
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      TAG: ${{ inputs.release_tag || github.ref_name }}
     steps:
+      - name: Check tag name
+        run: |
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]] || { echo "Invalid tag: $TAG (expected e.g. v0.1.0)"; exit 1; }
       - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
@@ -116,6 +130,9 @@ jobs:
       - run: ls -lh out
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }} # creates the tag here when run manually
+          name: Memtion ${{ env.TAG }}
           files: out/*
           body_path: packaging/RELEASE_NOTES.md
           fail_on_unmatched_files: true
