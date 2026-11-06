@@ -9,6 +9,12 @@ Mở webcam, theo dõi khuôn mặt + tay + cơ thể, rồi hiện **meme có t
 └──────────────────────┴──────────────────┘
 ```
 
+## Tải bản build sẵn
+
+Vào trang [Releases](https://github.com/QinZinn/Memtion/releases), tải file cho máy bạn (Windows x64,
+macOS chip Apple, Linux x64). Không cần cài Python; hướng dẫn mở app có ngay trên trang release.
+Muốn chạy từ mã nguồn thì xem phần cài đặt bên dưới.
+
 ## Vì sao dùng Python mà không dùng Rust?
 
 Phần khó nhất của app là nhận diện điểm mốc mặt / tay / cơ thể và biểu cảm. **MediaPipe** làm sẵn tất cả việc đó
@@ -52,6 +58,7 @@ memtion            # hoặc: python -m memtion
 | Phím | Tác dụng |
 |------|----------|
 | `q` / `Esc` | thoát |
+| `p` | đổi pack meme (Meme gốc ↔ Blob) |
 | `d` | bật/tắt overlay debug (điểm mốc, điểm số từng meme, giá trị đặc trưng) |
 | `c` | **hiệu chỉnh**: nhìn thẳng với mặt bình thường ~1 giây, app sẽ lấy đó làm mốc "trung tính" |
 | `m` | bật/tắt lật gương |
@@ -63,6 +70,8 @@ Nên bấm `c` một lần sau khi ngồi vào chỗ: webcam laptop thường đ
 Một số tuỳ chọn:
 
 ```bash
+memtion --pack blob         # bắt đầu với pack Blob
+memtion --list              # xem các pack và meme
 memtion --camera 1          # dùng webcam khác (/dev/video1)
 memtion --fast              # pose model "lite": nhanh hơn trên máy yếu
 memtion --debug             # mở sẵn overlay debug
@@ -70,7 +79,17 @@ memtion --camera clip.mp4   # chạy trên file video
 memtion --image anh.jpg --out ketqua.jpg   # phân tích 1 ảnh, in điểm số, lưu ảnh kết quả
 ```
 
-## Các meme và tư thế tương ứng
+## Các pack meme
+
+App có 2 pack, bấm `p` để đổi:
+
+- **Meme gốc** (`packs/default.toml`, ảnh trong `Sample_Meme/`): 20 meme, thiên về tư thế tay và cơ thể (bảng bên dưới).
+- **Blob** (`packs/blob.toml`, ảnh trong `Blob_Meme/`): 31 mặt vẽ tay, thiên về biểu cảm khuôn mặt: cười, khóc,
+  há miệng, chu môi, phồng má, mím môi, nhíu mày, nghiêng/cúi đầu, ngón cái lên/xuống, ló mặt từ mép khung hình…
+  Vài meme không có biểu cảm tương ứng đo được (lè lưỡi, đeo kính, hề, bó hoa) nên được gán cho tư thế gần nghĩa
+  nhất; xem `label` và luật trong file.
+
+### Pack "Meme gốc"
 
 | id | Làm thế này | Meme |
 |----|-------------|------|
@@ -97,7 +116,7 @@ memtion --image anh.jpg --out ketqua.jpg   # phân tích 1 ảnh, in điểm s�
 
 ## Tuỳ chỉnh
 
-Toàn bộ luật nằm trong [`memes.toml`](memes.toml), **không cần sửa code**:
+Toàn bộ luật nằm trong các file [`packs/*.toml`](packs/), **không cần sửa code**:
 
 ```toml
 [[meme]]
@@ -113,11 +132,16 @@ not  = { hand_chin = 0.5 }                 # không được có (ví dụ)
   trong `when` (và `1 - giá trị` của các đặc trưng trong `not`). Thiếu một đặc trưng nặng ký → điểm gần 0.
 - Meme có điểm cao nhất (sau khi làm mượt theo thời gian) sẽ được hiện; nếu không meme nào đạt `min_score`
   thì hiện meme `fallback`.
-- **Thêm meme mới**: chép ảnh vào `Sample_Meme/`, thêm một khối `[[meme]]`. Bật `--debug` để xem đặc trưng
+- **Thêm meme mới**: chép ảnh vào thư mục ảnh của pack, thêm một khối `[[meme]]`. Bật `--debug` để xem đặc trưng
   nào sáng lên khi bạn làm tư thế đó rồi đưa vào `when`.
+- **Thêm pack mới**: tạo một file `.toml` (có bảng `[pack]` với `name`) trong `packs/`, hoặc trong thư mục cấu hình
+  người dùng nếu bạn dùng bản build sẵn: `~/.config/memtion/packs` (Linux),
+  `~/Library/Application Support/memtion/packs` (macOS), `%APPDATA%\memtion\packs` (Windows).
+- `tests/test_packs.py` kiểm tra mỗi biểu cảm chọn đúng meme của nó với khoảng cách điểm rõ ràng; thêm kịch bản
+  vào đó khi bạn thêm meme để bắt các luật "giẫm chân" lên nhau.
 - Ngưỡng của đặc trưng (ví dụ cười bao nhiêu thì tính là cười) chỉnh trong bảng `[thresholds]`.
 
-Danh sách đặc trưng có trong phần đầu `memes.toml`; định nghĩa chi tiết trong `memtion/features.py`.
+Danh sách đặc trưng có trong phần đầu `packs/default.toml`; định nghĩa chi tiết trong `memtion/features.py`.
 
 ## Cấu trúc code
 
@@ -127,10 +151,13 @@ memtion/
   features.py   Observation  ->  các đặc trưng có tên, giá trị 0..1
   matcher.py    đọc memes.toml, chấm điểm meme, làm mượt + chống nhấp nháy
   render.py     vẽ khung meme, chữ tiếng Việt, overlay debug
-  cli.py        vòng lặp webcam, phím tắt, chế độ --image
+  cli.py        vòng lặp webcam, phím tắt, chọn pack, chế độ --image
   models.py     tải model MediaPipe
-memes.toml      luật ánh xạ tư thế -> meme
+  paths.py      đường dẫn tài nguyên / thư mục người dùng (chạy từ mã nguồn hoặc bản build)
+packs/          mỗi file .toml là một pack: luật ánh xạ tư thế -> meme
+packaging/      spec PyInstaller + ghi chú release
 tests/          pytest (test tích hợp chạy trên các ảnh meme có người thật)
+.github/workflows/build.yml   test -> build 3 hệ điều hành -> release
 ```
 
 ```bash
@@ -140,6 +167,31 @@ pip install -e ".[dev]"
 ```bash
 pytest
 ```
+
+## Build và phát hành
+
+Workflow [`.github/workflows/build.yml`](.github/workflows/build.yml) chạy mỗi lần push:
+
+1. **Test**: ruff + pytest (kể cả test tích hợp với model thật) trên Ubuntu.
+2. **Build**: PyInstaller trên Windows, macOS (Apple Silicon) và Linux. Mỗi bản build được chạy thử ngay trên
+   runner (`--list` và nhận diện một ảnh mẫu phải ra `shocked`) rồi đóng gói thành file tải về trong mục Artifacts.
+3. **Release**: khi push một tag `v*`, các file trên được đính vào một GitHub Release.
+
+```bash
+git tag v0.1.0
+```
+
+```bash
+git push origin v0.1.0
+```
+
+Build thử trên máy mình:
+
+```bash
+pip install -e . pyinstaller && python -m memtion --download-models && pyinstaller packaging/memtion.spec --noconfirm
+```
+
+Kết quả nằm ở `dist/memtion/` (hoặc `dist/Memtion.app` trên macOS).
 
 ## Gỡ lỗi
 

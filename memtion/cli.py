@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
 import statistics
 import sys
@@ -239,7 +240,21 @@ def load_packs(args: argparse.Namespace) -> tuple[list[Config], int]:
     raise ConfigError(f"không có pack '{args.pack}'. Có: {names}")
 
 
+def setup_console() -> None:
+    """Make Vietnamese output work on consoles that default to a legacy code page (Windows)."""
+    if sys.platform == "win32":
+        import ctypes
+
+        with contextlib.suppress(AttributeError, OSError):
+            ctypes.windll.kernel32.SetConsoleOutputCP(65001)
+    for stream in (sys.stdout, sys.stderr):
+        if stream is not None and hasattr(stream, "reconfigure"):
+            with contextlib.suppress(OSError, ValueError):
+                stream.reconfigure(encoding="utf-8", errors="replace")
+
+
 def main(argv: list[str] | None = None) -> int:
+    setup_console()
     args = parse_args(argv)
     if args.download_models:
         for path in download_all(args.models):

@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "mediapipe>=0.10.14",
-    "opencv-python>=4.8",
+    "opencv-contrib-python>=4.8",  # same cv2 build mediapipe depends on
     "numpy>=1.24",
     "pillow>=10",
 ]

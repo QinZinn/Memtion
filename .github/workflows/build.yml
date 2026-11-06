@@ -1,0 +1,121 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: System libraries for MediaPipe
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgles2
+      - run: pip install -e ".[dev]"
+      - run: python -m memtion --download-models
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -v
+
+  build:
+    name: Build ${{ matrix.name }}
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x64
+            os: ubuntu-22.04 # oldest supported runner -> works on more distros (glibc >= 2.35)
+            binary: dist/memtion/memtion
+          - name: windows-x64
+            os: windows-latest
+            binary: dist/memtion/memtion.exe
+          - name: macos-arm64
+            os: macos-14 # Apple Silicon; MediaPipe ships no Intel macOS wheel
+            binary: dist/Memtion.app/Contents/MacOS/memtion
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: System libraries for MediaPipe
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgles2
+      - name: Install
+        run: pip install . pyinstaller
+      - name: Download models
+        run: python -m memtion --download-models
+      - name: Build
+        run: pyinstaller packaging/memtion.spec --noconfirm
+
+      - name: Smoke test the build
+        # Run from outside the checkout so the build cannot fall back on the source tree.
+        run: |
+          set -euo pipefail
+          BIN="$GITHUB_WORKSPACE/${{ matrix.binary }}"
+          IMG="$(ls "$GITHUB_WORKSPACE"/Sample_Meme/*0e63018f*.jpg)"
+          cd "$RUNNER_TEMP"
+          "$BIN" --list | tee list.txt
+          grep -q "Blob" list.txt
+          "$BIN" --image "$IMG" | tee image.txt
+          grep -q "=> shocked" image.txt
+
+      - name: Package
+        id: package
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then VERSION="${GITHUB_REF_NAME}"; else VERSION="${GITHUB_SHA::7}"; fi
+          NAME="Memtion-${VERSION}-${{ matrix.name }}"
+          mkdir -p out
+          case "${{ runner.os }}" in
+            Linux)   tar -czf "out/${NAME}.tar.gz" -C dist memtion ;;
+            Windows) (cd dist && 7z a -tzip "../out/${NAME}.zip" memtion > /dev/null) ;;
+            macOS)   ditto -c -k --keepParent dist/Memtion.app "out/${NAME}.zip" ;;
+          esac
+          ls -lh out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: memtion-${{ matrix.name }}
+          path: out/*
+          if-no-files-found: error
+
+  release:
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          path: out
+          merge-multiple: true
+      - run: ls -lh out
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
+          body_path: packaging/RELEASE_NOTES.md
+          fail_on_unmatched_files: true
