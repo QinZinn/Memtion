@@ -24,7 +24,7 @@ WINDOW = "Memtion"
 CALIBRATION_FRAMES = 20
 TOAST_SECONDS = 2.0
 
-HELP_KEYS = "q: thoát | p: đổi pack | d: debug | c: hiệu chỉnh mặt | m: lật gương | s: chụp màn hình"
+HELP_KEYS = "q: thoát | p: đổi pack | d: debug | c: hiệu chỉnh mặt | l: chú thích | m: lật gương | s: chụp màn hình"
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -37,6 +37,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     p.add_argument("--fast", action="store_true", help="dùng pose model 'lite' (nhanh hơn, kém chính xác hơn)")
     p.add_argument("--debug", action="store_true", help="bật overlay debug ngay từ đầu")
     p.add_argument("--no-mirror", action="store_true", help="không lật ảnh camera như gương")
+    p.add_argument("--labels", action="store_true", help="hiện dòng chú thích dưới meme (bật/tắt bằng phím l)")
     p.add_argument("--image", type=Path, help="phân tích một ảnh tĩnh thay vì webcam (in ra điểm số)")
     p.add_argument("--out", type=Path, help="với --image: lưu ảnh kết quả")
     p.add_argument("--models", type=Path, default=DEFAULT_MODEL_DIR, help="thư mục chứa model MediaPipe")
@@ -74,7 +75,7 @@ def run_image(args: argparse.Namespace, config: Config) -> int:
 
     if args.out:
         meme = config.by_id(best_id)
-        panel = MemePanel(480).render(meme.id, meme.file, meme.label)
+        panel = MemePanel(480, show_label=args.labels).render(meme.id, meme.file, meme.label)
         vis = frame.copy()
         draw_landmarks(vis, obs)
         cv2.imwrite(str(args.out), compose(vis, panel))
@@ -118,7 +119,7 @@ def run_camera(args: argparse.Namespace, packs: list[Config], pack_index: int) -
     toast, toast_until = f"Pack: {config.name}", time.perf_counter() + TOAST_SECONDS
     calibration = Calibration()
     calibrating: list | None = None  # observations collected while calibrating
-    panel = MemePanel(480)
+    panel = MemePanel(480, show_label=args.labels)
     fps, last = 0.0, time.perf_counter()
     start = time.perf_counter()
     last_ts = -1
@@ -178,6 +179,8 @@ def run_camera(args: argparse.Namespace, packs: list[Config], pack_index: int) -
                 break
             if key == ord("d"):
                 debug = not debug
+            elif key == ord("l"):
+                panel.show_label = not panel.show_label
             elif key == ord("m"):
                 mirror = not mirror
             elif key == ord("p") and len(packs) > 1:

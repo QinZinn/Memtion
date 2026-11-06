@@ -62,7 +62,7 @@ Cần Python 3.11 trở lên. Xem phần **Cài đặt** trong [README](../READM
 ![Màn hình chính](images/01_shocked.jpg)
 
 - **Bên trái**: hình camera (đã lật như gương, nên giơ tay phải thì hình cũng giơ bên phải).
-- **Bên phải**: meme đang khớp nhất, kèm dòng chú thích ở dưới.
+- **Bên phải**: meme đang khớp nhất. Mặc định chỉ có ảnh, không có chữ; bấm **`l`** nếu muốn hiện tên meme bên dưới.
 - Dòng chữ vàng phía trên camera (ví dụ `Pack: Meme gốc`) chỉ hiện vài giây khi mở app hoặc khi đổi pack.
 
 Meme không đổi ngay lập tức mà đợi bạn giữ tư thế khoảng **nửa giây**, để không nhấp nháy khi bạn lỡ cử động.
@@ -90,6 +90,7 @@ Bấm phím khi cửa sổ Memtion đang được chọn (click vào cửa sổ 
 | `p` | Đổi pack meme (Meme gốc ↔ Blob) |
 | `c` | Hiệu chỉnh mặt trung tính (nên làm mỗi lần đổi chỗ ngồi hoặc ánh sáng) |
 | `d` | Bật/tắt chế độ debug (xem mục 7) |
+| `l` | Bật/tắt tên meme (chú thích) bên dưới ảnh meme, mặc định tắt |
 | `m` | Bật/tắt lật gương |
 | `s` | Chụp màn hình, lưu vào thư mục `Pictures/Memtion` (hoặc `Memtion` trong thư mục nhà) |
 | `q` hoặc `Esc` | Thoát |
@@ -107,7 +108,7 @@ Pack này mạnh về **tư thế tay**. Làm rõ ràng, dứt khoát, để tay
 | ![Giơ hai tay](images/03_break_free.jpg) | ![Tay ôm cổ](images/04_choking.jpg) |
 | **Giơ cả hai tay lên cao quá đầu** → "Tự do rồi!" | **Tay ôm cổ + nhăn mặt** → "Nghẹt thở luôn á" |
 
-Toàn bộ 20 meme:
+Toàn bộ 20 meme (cột "Meme" ghi tên meme, là chữ hiện ra khi bạn bật chú thích bằng phím `l`):
 
 | Làm thế này | Meme |
 |---|---|
@@ -143,6 +144,8 @@ càng tốt) và để mặt đủ sáng.
 |---|---|
 | ![Kinh hoàng](images/05_blob_horror.jpg) | ![Thở oxy](images/06_blob_oxygen.jpg) |
 | Há to miệng + nhướn mày + mở to mắt → "Kinh hoàng!" | Tay đặt ở miệng/cằm, không cười → "Thở oxy gấp" |
+
+Cột "Meme" ghi tên meme (hiện ra khi bật chú thích bằng phím `l`).
 
 | Làm thế này | Meme |
 |---|---|
@@ -245,6 +248,7 @@ Chạy từ terminal (Windows: mở `cmd` trong thư mục `memtion`, gõ `memti
 | `memtion --fast` | Chạy nhanh hơn trên máy yếu |
 | `memtion --debug` | Bật debug ngay từ đầu |
 | `memtion --no-mirror` | Không lật gương |
+| `memtion --labels` | Bật sẵn tên meme bên dưới ảnh |
 | `memtion --image anh.jpg --out ketqua.jpg` | Phân tích một ảnh tĩnh, in điểm số, lưu ảnh kết quả |
 
 ---
@@ -268,7 +272,7 @@ Mỗi pack là một file `.toml` liệt kê ảnh meme và tư thế ứng vớ
    [[meme]]
    id = "cuoi_to"
    file = "cuoi.png"
-   label = "Hahaha"
+   label = "Hahaha"   # tên meme, chỉ hiện khi bật chú thích (phím l)
    when = { smile = 1.0, mouth_open = 1.0 }
 
    [[meme]]

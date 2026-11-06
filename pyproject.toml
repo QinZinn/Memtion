@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "memtion"
-version = "0.1.0"
+version = "0.1.1"
 description = "Track the webcam and show the meme that matches your pose / facial expression"
 readme = "README.md"
 requires-python = ">=3.11"

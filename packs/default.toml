@@ -5,7 +5,7 @@
 # Mỗi [[meme]] có:
 #   id        tên ngắn, duy nhất trong pack
 #   file      đường dẫn ảnh (tương đối so với file này)
-#   label     chữ hiển thị dưới meme
+#   label     tên meme, hiện dưới ảnh khi bật chú thích (phím l / --labels)
 #   priority  hệ số nhân điểm (mặc định 1.0). Tư thế tay/cơ thể đặt cao hơn
 #             biểu cảm khuôn mặt để không bị nụ cười "cướp" mất.
 #   when      các đặc trưng CẦN có:   ten_dac_trung = trọng_số

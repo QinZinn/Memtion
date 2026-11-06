@@ -88,22 +88,24 @@ def fit(img: np.ndarray, width: int, height: int) -> np.ndarray:
 
 
 class MemePanel:
-    """Caches the rendered meme panel (image + caption) per meme id."""
+    """Renders (and caches) the meme side of the window, optionally with its caption."""
 
     LABEL_H = 64
 
-    def __init__(self, size: int):
+    def __init__(self, size: int, show_label: bool = False):
         self.size = size
-        self._cache: dict[tuple[str, int], np.ndarray] = {}
+        self.show_label = show_label
+        self._cache: dict[tuple[str, str, bool], np.ndarray] = {}
 
     def render(self, meme_id: str | None, image_path: Path | None, label: str) -> np.ndarray:
-        key = (str(image_path), label)  # ids can repeat across packs; files don't
+        key = (str(image_path), label, self.show_label)  # ids can repeat across packs; files don't
         if key not in self._cache:
             panel = np.full((self.size, self.size, 3), BG, dtype=np.uint8)
-            body = self.size - self.LABEL_H
+            body = self.size - self.LABEL_H if self.show_label else self.size
             if image_path is not None:
                 panel[:body] = fit(load_image(image_path), self.size, body)
-            draw_text_centered(panel, label, body + self.LABEL_H // 2, size=30)
+            if self.show_label:
+                draw_text_centered(panel, label, body + self.LABEL_H // 2, size=30)
             self._cache[key] = panel
         return self._cache[key]
 
